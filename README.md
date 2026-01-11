@@ -118,7 +118,7 @@ Assurez-vous que ces ports ne sont pas déjà utilisés :
 
 ---
 
-## 🚀 Guide d'installation et d'utilisation
+##  Guide d'installation et d'utilisation
 
 ### Étape 1 : Vérifier la structure
 
