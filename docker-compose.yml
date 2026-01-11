@@ -1,0 +1,127 @@
+version: '3'
+
+services:
+  # Service MySQL - Base de données pour les microservices
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container1
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    networks:
+      - microservices-network
+    # Volume optionnel pour persister les données
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  # Service Consul - Découverte de services
+  consul:
+    image: consul:1.15.4
+    container_name: consul-container
+    ports:
+      - "8500:8500"
+    networks:
+      - microservices-network
+    command: consul agent -dev -client=0.0.0.0
+    # Mode dev pour développement (non recommandé en production)
+
+  # Service Gateway - Point d'entrée unique pour tous les microservices
+  gateway-service:
+    build:
+      context: ./gatewayService
+    container_name: gateway-service-container
+    ports:
+      - "8888:8888"
+    depends_on:
+      - mysql
+      - consul
+    networks:
+      - microservices-network
+    environment:
+      # Configuration Consul pour la découverte de services
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CLOUD_CONSUL_PORT: 8500
+      SPRING_CLOUD_CONSUL_DISCOVERY_ENABLED: 'true'
+      # Port du service Gateway
+      SERVER_PORT: 8888
+
+  # Service Client - Microservice de gestion des clients
+  client-service:
+    build:
+      context: ./clientService
+    container_name: client-service-container
+    ports:
+      - "8088:8088"
+    depends_on:
+      - mysql
+      - consul
+      - gateway-service
+    networks:
+      - microservices-network
+    environment:
+      # Configuration Consul
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CLOUD_CONSUL_PORT: 8500
+      SPRING_CLOUD_CONSUL_DISCOVERY_ENABLED: 'true'
+      # Configuration base de données MySQL
+      # IMPORTANT: utiliser "mysql" (nom du service) et non "localhost"
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/Micro_ClientDB?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      # Port du service Client
+      SERVER_PORT: 8088
+      # Nom du service pour Consul
+      SPRING_APPLICATION_NAME: service-client
+
+  # Service Voiture - Microservice de gestion des voitures
+  voiture-service:
+    build:
+      context: ./voitureService
+    container_name: voiture-service-container
+    ports:
+      - "8089:8089"
+    depends_on:
+      - mysql
+      - consul
+      - gateway-service
+    networks:
+      - microservices-network
+    environment:
+      # Configuration Consul
+      SPRING_CLOUD_CONSUL_HOST: consul
+      SPRING_CLOUD_CONSUL_PORT: 8500
+      SPRING_CLOUD_CONSUL_DISCOVERY_ENABLED: 'true'
+      # Configuration base de données MySQL
+      # IMPORTANT: utiliser "mysql" (nom du service) et non "localhost"
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/Micro_VoitureDB?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      # Port du service Voiture
+      SERVER_PORT: 8089
+      # Nom du service pour Consul
+      SPRING_APPLICATION_NAME: service-voiture
+
+  # Service phpMyAdmin - Interface web pour gérer MySQL
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-container
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8081:80"
+    networks:
+      - microservices-network
+    depends_on:
+      - mysql
+
+# Réseau Docker pour permettre la communication entre les conteneurs
+networks:
+  microservices-network:
+    driver: bridge
+
+# Volumes pour persister les données
+volumes:
+  mysql-data:
