@@ -1,32 +1,20 @@
 # TP 25 : Conteneurisation des Microservices avec Docker + Découverte de services via Consul
 
-## 📋 Table des matières
 
-1. [Objectifs du lab](#objectifs-du-lab)
-2. [Prérequis](#prérequis)
-3. [Structure du projet](#structure-du-projet)
-4. [Architecture](#architecture)
-5. [Guide d'installation et d'utilisation](#guide-dinstallation-et-dutilisation)
-6. [Explications techniques](#explications-techniques)
-7. [Vérifications](#vérifications)
-8. [Dépannage](#dépannage)
-
----
-
-## 🎯 Objectifs du lab
+##  Objectifs du lab
 
 À la fin de ce lab, il sera possible de :
 
-- ✅ Expliquer pourquoi Docker est utile en microservices
-- ✅ Créer un Dockerfile multi-stage pour un microservice Spring Boot
-- ✅ Orchestrer plusieurs conteneurs (MySQL, Consul, Gateway, Client, Voiture, phpMyAdmin) via Docker Compose
-- ✅ Comprendre la différence entre localhost (machine hôte) et les noms DNS Docker (mysql, consul)
-- ✅ Vérifier l'enregistrement automatique des services dans Consul
-- ✅ Diagnostiquer les problèmes classiques (ports, réseau, base, dépendances)
+-  Expliquer pourquoi Docker est utile en microservices
+-  Créer un Dockerfile multi-stage pour un microservice Spring Boot
+-  Orchestrer plusieurs conteneurs (MySQL, Consul, Gateway, Client, Voiture, phpMyAdmin) via Docker Compose
+-  Comprendre la différence entre localhost (machine hôte) et les noms DNS Docker (mysql, consul)
+-  Vérifier l'enregistrement automatique des services dans Consul
+-  Diagnostiquer les problèmes classiques (ports, réseau, base, dépendances)
 
----
 
-## 📦 Prérequis
+
+##  Prérequis
 
 ### Outils nécessaires
 
@@ -62,62 +50,21 @@ Assurez-vous que ces ports ne sont pas déjà utilisés :
 - **8088** (Client Service)
 - **8089** (Voiture Service)
 
-> ⚠️ **Remarque** : Si un port est déjà utilisé, Docker Compose échouera avec un message "port is already allocated".
+>  **Remarque** : Si un port est déjà utilisé, Docker Compose échouera avec un message "port is already allocated".
 
 ---
 
-## 📁 Structure du projet
+##  Structure du projet
 
-```
-TP 25/
-├── docker-compose.yml          # Orchestration de tous les services
-├── README.md                   # Ce fichier
-│
-├── clientService/              # Microservice Client
-│   ├── Dockerfile             # Image Docker multi-stage
-│   ├── pom.xml                # Dépendances Maven
-│   └── src/
-│       └── main/
-│           ├── java/
-│           │   └── com/microservices/client/
-│           │       ├── ClientServiceApplication.java
-│           │       ├── controller/
-│           │       ├── service/
-│           │       ├── repository/
-│           │       └── model/
-│           └── resources/
-│               └── application.properties
-│
-├── voitureService/             # Microservice Voiture
-│   ├── Dockerfile             # Image Docker multi-stage
-│   ├── pom.xml                # Dépendances Maven
-│   └── src/
-│       └── main/
-│           ├── java/
-│           │   └── com/microservices/voiture/
-│           │       ├── VoitureServiceApplication.java
-│           │       ├── controller/
-│           │       ├── service/
-│           │       ├── repository/
-│           │       └── model/
-│           └── resources/
-│               └── application.properties
-│
-└── gatewayService/             # API Gateway
-    ├── Dockerfile             # Image Docker multi-stage
-    ├── pom.xml                # Dépendances Maven
-    └── src/
-        └── main/
-            ├── java/
-            │   └── com/microservices/gateway/
-            │       └── GatewayServiceApplication.java
-            └── resources/
-                └── application.properties
-```
 
----
+<img width="495" height="723" alt="Capture d’écran 2026-01-11 à 14 06 40" src="https://github.com/user-attachments/assets/2e5e2864-66ff-465e-93f8-436304286896" />
 
-## 🏗️ Architecture
+
+
+
+
+
+##  Architecture
 
 ### Vue d'ensemble
 
@@ -241,7 +188,7 @@ docker compose logs -f gateway-service
 
 ---
 
-## 🔍 Vérifications
+##  Vérifications
 
 ### Vérification 1 : Consul UI
 
@@ -252,7 +199,7 @@ docker compose logs -f gateway-service
    - `service-client`
    - `service-voiture`
 
-> ✅ **Checkpoint** : Si vous voyez ces 3 services, la découverte fonctionne !
+>  **Checkpoint** : Si vous voyez ces 3 services, la découverte fonctionne !
 
 ### Vérification 2 : phpMyAdmin
 
@@ -265,7 +212,7 @@ docker compose logs -f gateway-service
    - `Micro_ClientDB`
    - `Micro_VoitureDB`
 
-> ✅ **Checkpoint** : Si vous voyez ces bases, MySQL fonctionne !
+>  **Checkpoint** : Si vous voyez ces bases, MySQL fonctionne !
 
 ### Vérification 3 : Tester les services
 
@@ -379,8 +326,8 @@ Tous les services sont dans le même réseau (`microservices-network`). Cela per
 #### Points importants
 
 1. **Noms DNS** : En Docker, les noms de services deviennent des noms DNS
-   - ✅ `jdbc:mysql://mysql:3306/...` (correct)
-   - ❌ `jdbc:mysql://localhost:3306/...` (incorrect)
+   -  `jdbc:mysql://mysql:3306/...` (correct)
+   -  `jdbc:mysql://localhost:3306/...` (incorrect)
 
 2. **Dépendances** : `depends_on` garantit l'ordre de démarrage
 
@@ -404,7 +351,7 @@ spring.cloud.consul.discovery.enabled=true
 
 ---
 
-## 🛠️ Dépannage
+##  Dépannage
 
 ### Problème : Port déjà utilisé
 
@@ -470,7 +417,7 @@ docker compose up -d --build client-service
 # Arrêter tous les services
 docker compose down
 
-# Arrêter et supprimer les volumes (⚠️ supprime les données)
+# Arrêter et supprimer les volumes ( supprime les données)
 docker compose down -v
 
 # Redémarrer un service spécifique
@@ -484,103 +431,3 @@ docker exec -it client-service-container sh
 ```
 
 ---
-
-## 🎓 Mini défis (style Google Labs)
-
-### Défi 1 : Redémarrer un service et observer Consul
-
-```bash
-# Redémarrer le service Client
-docker compose restart client-service
-
-# Observer la liste des services dans Consul UI
-# http://localhost:8500/ui/dc1/services
-```
-
-**Question** : Que se passe-t-il dans Consul quand vous redémarrez un service ?
-
-### Défi 2 : Lire les logs du Gateway
-
-```bash
-# Suivre les logs en temps réel
-docker compose logs -f gateway-service
-```
-
-**À repérer** :
-- Démarrage Spring Boot
-- Connexion à Consul
-- Enregistrement du service
-- Routes configurées
-
-### Défi 3 : Tester la résilience
-
-```bash
-# Arrêter le service Client
-docker compose stop client-service
-
-# Essayer d'accéder via le Gateway
-curl http://localhost:8888/api/clients
-
-# Redémarrer le service
-docker compose start client-service
-
-# Réessayer
-curl http://localhost:8888/api/clients
-```
-
----
-
-## 📚 Résumé
-
-Dans ce lab, nous avons :
-
-1. ✅ **Conteneurisé** chaque microservice via Dockerfile multi-stage
-2. ✅ **Orchestré** tous les services avec Docker Compose
-3. ✅ **Configuré** Consul pour la découverte automatique de services
-4. ✅ **Créé** un Gateway comme point d'entrée unique
-5. ✅ **Compris** la différence entre `localhost` et les noms DNS Docker
-
-### Concepts clés à retenir
-
-- **Dockerfile multi-stage** : Build séparé de l'exécution
-- **Docker Compose** : Orchestration simplifiée
-- **Consul** : Découverte de services automatique
-- **Réseau Docker** : Communication par noms DNS
-- **Gateway** : Point d'entrée unique pour tous les microservices
-
----
-
-## 📝 Notes supplémentaires
-
-### Pour aller plus loin
-
-1. **Ajouter un service** : Créez un nouveau microservice et ajoutez-le à `docker-compose.yml`
-2. **Configurer des volumes** : Persister les données MySQL
-3. **Ajouter du monitoring** : Intégrer Prometheus et Grafana
-4. **Sécuriser les services** : Ajouter Spring Security
-
-### Ressources
-
-- [Documentation Docker](https://docs.docker.com/)
-- [Documentation Docker Compose](https://docs.docker.com/compose/)
-- [Documentation Consul](https://www.consul.io/docs)
-- [Spring Cloud Gateway](https://spring.io/projects/spring-cloud-gateway)
-
----
-
-## ✅ Checklist finale
-
-Avant de terminer, vérifiez que :
-
-- [ ] Tous les conteneurs sont démarrés (`docker compose ps`)
-- [ ] Consul UI affiche les 3 services
-- [ ] phpMyAdmin permet d'accéder aux bases de données
-- [ ] Les services répondent directement (ports 8088, 8089)
-- [ ] Le Gateway route correctement les requêtes (port 8888)
-- [ ] Vous comprenez pourquoi utiliser `mysql` et non `localhost`
-
----
-
-**Bon travail ! 🎉**
-
-Si vous avez des questions ou rencontrez des problèmes, consultez la section [Dépannage](#dépannage) ou les logs des services.
